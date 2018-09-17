@@ -2,7 +2,7 @@
    "manifest_version": 2,
    "name": "LiuChan Chinese Popup Dictionary",
    "short_name": "LiuChan",
-   "version": "1.1.7",
+   "version": "1.1.8",
    "options_ui": {
       "page": "html/options.html"
    },
@@ -32,6 +32,6 @@
       "48": "images/icon48.png"
    },
    "omnibox": {"keyword" : "lc"},
-   "permissions": [ "tabs", "tts", "storage", "contextMenus", "notifications", "http://*/*" ],
+   "permissions": [ "tabs", "storage", "contextMenus", "notifications", "http://*/*" ],
    "web_accessible_resources": [ "css/*", "js/liuchancontent.js", "images/*" ]
 }

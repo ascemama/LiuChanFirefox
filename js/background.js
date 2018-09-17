@@ -39,8 +39,8 @@ chrome.runtime.onMessage.addListener(
 	    break;
 	case 'tts':
 	    // mandarin: zh-CN, zh-TW cantonese: zh-HK
-	    chrome.tts.speak(request.text,  {"lang": liuChan.config.ttsDialect,
-					     "rate": liuChan.config.ttsSpeed});
+	    //chrome.tts.speak(request.text,  {"lang": liuChan.config.ttsDialect,
+		//			     "rate": liuChan.config.ttsSpeed});
 	    break;
 	case 'rebuild':
             liuChan.dict.loadDictionary();
