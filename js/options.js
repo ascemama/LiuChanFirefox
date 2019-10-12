@@ -152,7 +152,7 @@ function saveOptions() {
     };
 
     try {
-        chrome.storage.local.set(newConfig, function () {
+        chromep.storage.local.set(newConfig, function () {
             chrome.runtime.sendMessage({"type": "config", "config": newConfig});
             // Update status to let user know options were saved.
             let status = document.getElementById('status');

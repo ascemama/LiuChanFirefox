@@ -2,6 +2,7 @@
 
 const chromep = new ChromePromise();
 const liuChan = new LiuChan();
+const vocablists = new vocabLists();
 
 // This gets fired when the extension's button is clicked
 chrome.browserAction.onClicked.addListener(liuChan.toggleExtension.bind(liuChan));
@@ -55,7 +56,11 @@ chrome.runtime.onMessage.addListener(
                 this.chrome.storage.local.set({notepad : request.query});
                 liuChan.config.notepad = request.query;
 	    }
-	    break;
+		break;
+	case 'updateContextMenu':
+			vocablists.updateContextMenu(request.entry);
+			response();
+			break;
 	default:
 	    console.log('Background received unknown request: ', request);
 	}

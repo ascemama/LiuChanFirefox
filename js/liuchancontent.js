@@ -883,6 +883,12 @@ const lcxContent = {
             tdata.prevSelView = doc.defaultView;
         }
 
+        //update the context menu, so that it contains the selected character
+        chrome.runtime.sendMessage({
+            "type": "updateContextMenu",
+            "entry": e.data[0].simp+"/"+e.data[0].trad
+        });
+
         chrome.runtime.sendMessage({
             "type": "makehtml",
             "entry": e

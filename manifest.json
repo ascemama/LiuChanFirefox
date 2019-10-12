@@ -17,6 +17,7 @@
          "/js/liuchan.js",
          "/js/data.js",
          "/js/fuzzysort.js",
+         "/js/vocabLists.js",
          "/js/background.js"
       ]
    },
@@ -37,6 +38,6 @@
       "48": "images/icon48.png"
    },
    "omnibox": {"keyword" : "lc"},
-   "permissions": [ "tabs", "storage", "contextMenus", "notifications", "http://*/*" ],
+   "permissions": [ "tabs", "storage", "contextMenus", "notifications", "http://*/*","contextMenus" ],
    "web_accessible_resources": [ "css/*", "js/liuchancontent.js", "images/*" ]
 }
