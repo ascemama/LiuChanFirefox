@@ -3,28 +3,53 @@ class vocabLists{
 constructor(){
 
     browser.contextMenus.create({
-        id: "vocabLists",
-        //title: browser.i18n.getMessage("vocabLists"),
+        id: "addToVocabList",
         title:"Add Item to List",
+        contexts: ["all"]
+      }, this.onContextMenuCreated) 
+
+      browser.contextMenus.create({
+        id: "deleteVocabList",
+        title:"Delete vocabuliary list",
         contexts: ["all"]
       }, this.onContextMenuCreated) 
 
 
       browser.contextMenus.onClicked.addListener(function(info, tab) { 
         switch (info.menuItemId) {
-          case "vocabLists":
-            console.log(info.selectionText);
-            var item={ list:"test", char:"y"};
-            browser.storage.local.set(item);
+          case "addToVocabList":
             let items=browser.storage.local.get();
-            items.then(res=>{console.log("item"+JSON.stringify(res))}, res=>{console.log("gd")});
+            items.then(res=> {
+            //list is empty
+              if(res.list === undefined){
+                var d=new Date()
+
+                var item={ list:"//"+d.toDateString()+"\n"+info.selectionText+ "\n"};
+              }
+              else{
+                item={list:res.list+info.selectionText+"\n"};
+              }
+            //re-write
+              browser.storage.local.set(item);
+              items=browser.storage.local.get();
+              items.then(res=>{console.log(JSON.stringify(res))});
+            });
             break;
+            case "deleteVocabList":
+              let  itemsToBeDeleted=browser.storage.local.get();
+                itemsToBeDeleted.then(res=> {
+                //list is empty
+                  if(res.list !== undefined){
+                    browser.storage.local.remove("list")
+                  }});
+                break;
+
         }
       })
 }
 updateContextMenu(m){
     browser.contextMenus.update(
-        "vocabLists",               // integer or string
+        "addToVocabList",               // integer or string
         {title: "Add "+ m + " to list"} // object
       )
 }
