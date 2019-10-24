@@ -38,6 +38,6 @@
       "48": "images/icon48.png"
    },
    "omnibox": {"keyword" : "lc"},
-   "permissions": [ "tabs", "storage", "contextMenus", "notifications", "http://*/*","contextMenus" ],
+   "permissions": [ "tabs", "storage", "contextMenus", "notifications", "http://*/*","contextMenus","downloads" ],
    "web_accessible_resources": [ "css/*", "js/liuchancontent.js", "images/*" ]
 }
