@@ -39,5 +39,13 @@
    },
    "omnibox": {"keyword" : "lc"},
    "permissions": [ "tabs", "storage", "contextMenus", "notifications", "http://*/*","contextMenus","downloads" ],
-   "web_accessible_resources": [ "css/*", "js/liuchancontent.js", "images/*" ]
+   "web_accessible_resources": [ "css/*", "js/liuchancontent.js", "images/*" ] ,
+   "commands": {
+      "addCharacterToList": {
+        "suggested_key": {
+          "default": "Ctrl+Alt+Y"
+        },
+        "description": "To send a character to the list"
+      }
+    }
 }
