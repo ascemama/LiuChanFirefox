@@ -281,10 +281,11 @@ class LiuChan {
 		"config":this.config.content
 	    });
 	}
-        chrome.tabs.sendMessage(tab.tabId ? tab.tabId : tab.id, {
+ /*       chrome.tabs.sendMessage(tab.tabId ? tab.tabId : tab.id, {
             "type":"update",
             "notepad":this.config.notepad
         });
+        */
     }
 
     async sendAllTabs(message) {

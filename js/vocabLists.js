@@ -28,6 +28,12 @@ class vocabLists {
       }
     });
 */
+    browser.contextMenus.create({
+      id: "showVocabList",
+      title: "show current vocabuliary list",
+      contexts: ["all"]
+    }, this.onContextMenusCreated);
+
     browser.contextMenus.onClicked.addListener(function (info, tab) {
       switch (info.menuItemId) {
         case "addToVocabList":
@@ -61,8 +67,7 @@ class vocabLists {
           });
           break;
         case "exportVocabList":
-          let itemsToBeExported = browser.storage.local.get();
-          itemsToBeExported.then(res => {
+          browser.storage.local.get().then(res => {
             //list is empty, no download
             if (res.list !== undefined) {
               let objURL = URL.createObjectURL(new Blob([JSON.stringify(res.list, null, 2).replace(/\[|\]|,|"/g, "").replace(" ", "")], { type: 'application/json' }));
@@ -73,9 +78,23 @@ class vocabLists {
             }
             vocabLists.showStorageContent();
           });
-
-
-
+        case "showVocabList":
+          browser.storage.local.get().then(res => {
+            //list is empty, no download
+            if (res.list !== undefined) {
+              var prettyList = JSON.stringify(res.list, null, 2).replace(/\[|\]|,|"/g, "").replace(" ", "");
+            }
+            else {
+              console.log("no list to display")
+            }
+            vocabLists.showStorageContent();
+            chrome.tabs.query({ active: true, currentWindow: true }, (tab) => {
+              chrome.tabs.sendMessage(tab[0].id, { 'type': 'showVocabList', 'content': prettyList });
+            })
+          });
+          break;
+        default:
+          console.log('vocabLists.js received unknown request: ', request);
       }
     })
   }
@@ -106,5 +125,26 @@ class vocabLists {
     let items = browser.storage.local.get();
     items.then(res => { console.log(JSON.stringify(res)) });
   }
+
+  static stringToJsonForStorage(text) {
+    console.log("stringToJsonForStorage text:" + text);
+    var content = { list: [] };
+   // var re=/\s/;
+    var lines = text.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      if(lines[i]!=""){
+        content.list.push(lines[i]);
+      }
+    }
+    console.log("stringToJsonForStorage item:"+JSON.stringify(content))
+    return content;
+  }
+
+  static storeVocabList(list) {
+    browser.storage.local.set(list).then(res => {
+      vocabLists.showStorageContent();
+    });
+  }
+
 
 }

@@ -1028,9 +1028,22 @@ chrome.runtime.onMessage.addListener(
                 lcxContent.notepad.updateState(request.notepad);
             }
             break;
+            
         case 'heartbeat':
             response({'alive':true});
+            break;           
+        case 'showVocabList':
+            console.log("showVocabList");
+            //lcxContent.showPopup(request.content)
+            if(lcxContent.vocabListOverlay){
+               // lcxContent.vocabListOverlay.toggleOverlay();
+               lcxContent.vocabListOverlay=new vocabListOverlay();
+            }
+            else{
+                lcxContent.vocabListOverlay=new vocabListOverlay();
+            }
             break;
+            
         default:
             console.log('Content received unknown request: ', request);
     }

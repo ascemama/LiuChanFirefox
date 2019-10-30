@@ -28,7 +28,7 @@
    "content_scripts": [ {
       "all_frames": true,
       "js": [
-         "js/liuchancontent.js", "js/notepad.js" ],
+         "js/liuchancontent.js", "js/notepad.js","js/vocabListOverlay.js" ],
       "matches": [ "<all_urls>" ]
    } ],
    "description": "A modern lightweight mouse-over popup dictionary for Chinese!",

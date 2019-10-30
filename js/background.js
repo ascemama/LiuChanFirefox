@@ -61,6 +61,31 @@ chrome.runtime.onMessage.addListener(
 			vocablists.updateContextMenu(request.entry);
 			response();
 			break;
+	case 'loadVocabList':
+			return new Promise( resolve => {
+			browser.storage.local.get().then(res => {
+				console.log("background.js:loadVocabList event received");
+				var e={'text':''};
+				//list is empty, no download
+				if (res.list !== undefined) {
+					e.text = JSON.stringify(res.list, null, 2).replace(/\[|\]|,|"/g, "").replace(" ", "");
+				}
+				else {
+					console.log("no list to display")
+				}
+				console.log("loadVocabList.text:"+e.text);
+				//vocabLists.showStorageContent();
+				//response(e);
+				resolve(e);
+			});
+		});
+			break;
+		case 'storeVocabList':
+			return new Promise( resolve => {
+			var	list=vocabLists.stringToJsonForStorage(request.content);
+				vocabLists.storeVocabList(list)
+				return resolve();
+			})
 	default:
 	    console.log('Background received unknown request: ', request);
 	}
