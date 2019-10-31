@@ -68,7 +68,8 @@ chrome.runtime.onMessage.addListener(
 				var e={'text':''};
 				//list is empty, no download
 				if (res.list !== undefined) {
-					e.text = JSON.stringify(res.list, null, 2).replace(/\[|\]|,|"/g, "").replace(" ", "");
+					//e.text = JSON.stringify(res.list, null, 2).replace(/\[|\]|,|"/g, "").replace(" ", "");
+					e.text = JSON.stringify(res.list, null, 2).replace(/\[|\]|,|"/g, "").trim();
 				}
 				else {
 					console.log("no list to display")

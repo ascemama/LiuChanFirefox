@@ -10,14 +10,14 @@ class vocabLists {
 
     browser.contextMenus.create({
       id: "deleteVocabList",
-      title: "Delete vocabuliary list",
+      title: "Delete vocabulary list",
       contexts: ["all"]
     }, this.onContextMenuCreated);
 
 
     browser.contextMenus.create({
       id: "exportVocabList",
-      title: "Export vocabuliary list",
+      title: "Export vocabulary list",
       contexts: ["all"]
     }, this.onContextMenuCreated);
 
@@ -30,7 +30,7 @@ class vocabLists {
 */
     browser.contextMenus.create({
       id: "showVocabList",
-      title: "show current vocabuliary list",
+      title: "show current vocabulary list",
       contexts: ["all"]
     }, this.onContextMenusCreated);
 
@@ -79,7 +79,10 @@ class vocabLists {
             vocabLists.showStorageContent();
           });
         case "showVocabList":
-          browser.storage.local.get().then(res => {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tab) => {
+              chrome.tabs.sendMessage(tab[0].id, { 'type': 'showVocabList'});
+            });
+          /*browser.storage.local.get().then(res => {
             //list is empty, no download
             if (res.list !== undefined) {
               var prettyList = JSON.stringify(res.list, null, 2).replace(/\[|\]|,|"/g, "").replace(" ", "");
@@ -91,7 +94,7 @@ class vocabLists {
             chrome.tabs.query({ active: true, currentWindow: true }, (tab) => {
               chrome.tabs.sendMessage(tab[0].id, { 'type': 'showVocabList', 'content': prettyList });
             })
-          });
+          });*/
           break;
         default:
           console.log('vocabLists.js received unknown request: ', request);
@@ -132,8 +135,9 @@ class vocabLists {
    // var re=/\s/;
     var lines = text.split('\n');
     for (var i = 0; i < lines.length; i++) {
-      if(lines[i]!=""){
-        content.list.push(lines[i]);
+      let tr=lines[i].trim();
+      if(tr!=""){
+        content.list.push(tr);
       }
     }
     console.log("stringToJsonForStorage item:"+JSON.stringify(content))
