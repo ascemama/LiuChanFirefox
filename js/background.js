@@ -70,6 +70,7 @@ chrome.runtime.onMessage.addListener(
 				if (res.list !== undefined) {
 					//e.text = JSON.stringify(res.list, null, 2).replace(/\[|\]|,|"/g, "").replace(" ", "");
 					e.text = JSON.stringify(res.list, null, 2).replace(/\[|\]|,|"/g, "").trim();
+					e.list=res.list;
 				}
 				else {
 					console.log("no list to display")
@@ -83,8 +84,8 @@ chrome.runtime.onMessage.addListener(
 			break;
 		case 'storeVocabList':
 			return new Promise( resolve => {
-			var	list=vocabLists.stringToJsonForStorage(request.content);
-				vocabLists.storeVocabList(list)
+			//var	list=vocabLists.stringToJsonForStorage(request.content);
+				vocabLists.storeVocabList(request.content)
 				return resolve();
 			})
 	default:

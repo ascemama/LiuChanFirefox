@@ -7,7 +7,8 @@ class vocabListOverlay {
         const header = document.createElement('p');
         const pin = document.createElement('button');
         const close = document.createElement('button');
-        const textarea = document.createElement('textarea');
+        const textarea = document.createElement('table');
+        //const textarea = document.createElement('textarea');
 
         overlay.setAttribute('id', 'liuchan-notepad-overlay');
         overlay.setAttribute('display', 'none');
@@ -40,18 +41,18 @@ class vocabListOverlay {
         close.addEventListener('click', this.closeOverlay);
         document.addEventListener('click', this.lostFocus);
 
-        this.pos = [0,0,0,0];
+        this.pos = [0, 0, 0, 0];
         this.loadFromStorage();
         this.showOverlay();
     }
 
     loadFromStorage() {
         // This asks for and receives the stored notepad config from the background script
-        chrome.runtime.sendMessage({'type': 'loadVocabList'}).then(r => {
-            console.log("loadFromStorage: "+JSON.stringify(r))
+        chrome.runtime.sendMessage({ 'type': 'loadVocabList' }).then(r => {
+            console.log("loadFromStorage: " + JSON.stringify(r))
             this.updateState(r);
         });
-        
+
     }
 
     updateState(data) {
@@ -67,11 +68,46 @@ class vocabListOverlay {
             textarea.style.width = data.size[0] + 'px';
             textarea.style.height = data.size[1] + 'px';
         }
-        textarea.value = data.text;
+        //textarea.value = data.text;
+        /*
+        // Create an empty <tr> element and add it to the 1st position of the table:
+        var row = textarea.insertRow(0);
+
+        // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+
+        // Add some text to the new cells:
+        cell1.innerHTML = "NEW CELL1";
+        cell2.innerHTML = "NEW CELL2";
+
+        var row = textarea.insertRow(1);
+
+        // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+
+        // Add some text to the new cells:
+        cell1.innerHTML = "NEW CELL3";
+        cell2.innerHTML = "NEW CELL4";
+        */
+        this.addVocabListTable(data.list);
 
         this.isPinned = !data.pinned;
         this.pinOverlay();
         this.checkPageBoundary();
+    }
+
+    addVocabListTable(array){
+        const textarea = this.elements[4];
+        array.forEach(function (item, index){
+            var row = textarea.insertRow(index);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            cell1.innerHTML=item;
+            cell2.innerHTML="Del";
+        })
+
     }
 
     saveAfterInput() {
@@ -81,19 +117,26 @@ class vocabListOverlay {
     }
 
     saveToStorage() {
-       /* const el = this.elements[0].getBoundingClientRect(); // Overlay
-        const ol = this.elements[4]; // Textarea
-        const notepad = {
-            text: this.elements[4].value,
-            pos: [el.x, el.y],
-            size: [ol.offsetWidth, ol.offsetHeight],
-            pinned: this.isPinned
-        };
-        chrome.runtime.sendMessage({'type': 'notepad', 'query': notepad});
-        */
-       const textarea = this.elements[4];
-       chrome.runtime.sendMessage({'type': 'storeVocabList','content':textarea.value}) 
-        
+        /* const el = this.elements[0].getBoundingClientRect(); // Overlay
+         const ol = this.elements[4]; // Textarea
+         const notepad = {
+             text: this.elements[4].value,
+             pos: [el.x, el.y],
+             size: [ol.offsetWidth, ol.offsetHeight],
+             pinned: this.isPinned
+         };
+         chrome.runtime.sendMessage({'type': 'notepad', 'query': notepad});
+         */
+        const textarea = this.elements[4];
+        var content={list:[]};
+        for (let row of textarea.rows) 
+            {
+                let val = row.cells[0].innerText;
+                content.list.push(val);
+                 // your code belows
+            }
+        chrome.runtime.sendMessage({ 'type': 'storeVocabList', 'content': content })
+
     }
 
     checkPageBoundary() {
@@ -163,7 +206,7 @@ class vocabListOverlay {
     }
 
     toggleOverlay() {
-        this.isVisible ? this.closeOverlay() : this.showOverlay();
+        this.isVisible ? this.closeOverlay() : this.loadFromStorage() ; this.showOverlay();
     }
 
     showOverlay() {
@@ -171,6 +214,7 @@ class vocabListOverlay {
         this.elements[0].style.display = '';
         this.isVisible = true;
         this.checkPageBoundary();
+       // this.loadFromStorage();
     }
 
     lostFocus(e) {
@@ -184,5 +228,13 @@ class vocabListOverlay {
         this.saveToStorage();
         this.elements[0].style.display = 'none';
         this.isVisible = false;
+
+        const textarea = this.elements[4];
+        for(var i = 0; i <textarea.rows.length; i++)
+            {
+                textarea.deleteRow(i);
+            }
+        //textarea.children().remove();
+        console.log("asdf");
     }
 }

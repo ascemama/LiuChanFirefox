@@ -1037,9 +1037,10 @@ chrome.runtime.onMessage.addListener(
             //lcxContent.showPopup(request.content)
             if(lcxContent.vocabListOverlay){
                // lcxContent.vocabListOverlay.toggleOverlay();
-               lcxContent.vocabListOverlay=new vocabListOverlay();
+               lcxContent.vocabListOverlay.toggleOverlay();
             }
             else{
+             
                 lcxContent.vocabListOverlay=new vocabListOverlay();
             }
             break;

@@ -152,6 +152,7 @@ function saveOptions() {
     };
 
     try {
+        /*
         chromep.storage.local.set(newConfig, function () {
             chrome.runtime.sendMessage({"type": "config", "config": newConfig});
             // Update status to let user know options were saved.
@@ -160,7 +161,16 @@ function saveOptions() {
             setTimeout(function () {
                 status.className = '';
             }, 1400);
-        });
+        });*/
+        browser.storage.local.set(newConfig).then(res => {
+            chrome.runtime.sendMessage({"type": "config", "config": newConfig});
+            // Update status to let user know options were saved.
+            let status = document.getElementById('status');
+            status.className += 'statusOn';
+            setTimeout(function () {
+                status.className = '';
+            }, 1400);
+          });
     } catch (err) {
         console.error("Chome Settings Sync Failed");
     }
