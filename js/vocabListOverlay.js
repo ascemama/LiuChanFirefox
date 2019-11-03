@@ -1,18 +1,18 @@
-class vocabListOverlay {
+class VocabListOverlay {
     constructor() {
         // Load stylesheet (if it hasn't been loaded already)
         if (!lcxContent.enabled) lcxContent.loadStyleSheet();
+        this.loadStyleSheet();
 
         const overlay = document.createElement('div');
         const header = document.createElement('p');
         const pin = document.createElement('button');
         const close = document.createElement('button');
         const textarea = document.createElement('table');
-        //const textarea = document.createElement('textarea');
 
         overlay.setAttribute('id', 'liuchan-notepad-overlay');
         overlay.setAttribute('display', 'none');
-        textarea.setAttribute('id', 'liuchan-notepad-input');
+        textarea.setAttribute('id', 'vocabList-table');
         header.textContent = 'Liuchan VocabList';
         pin.textContent = '\u2AEF';
         close.textContent = '\u2715';
@@ -34,6 +34,7 @@ class vocabListOverlay {
         this.saveAfterInput = this.saveAfterInput.bind(this);
         this.dragOverlay = this.dragOverlay.bind(this);
         this.stopDrag = this.stopDrag.bind(this);
+        this.deleteRow = this.deleteRow.bind(this);
 
         header.addEventListener('mousedown', this.startDrag);
         textarea.addEventListener('input', this.saveAfterInput);
@@ -42,14 +43,31 @@ class vocabListOverlay {
         document.addEventListener('click', this.lostFocus);
 
         this.pos = [0, 0, 0, 0];
+        this.currentVocabListLength = 0;
         this.loadFromStorage();
         this.showOverlay();
+    }
+
+    loadStyleSheet() {
+        // Check if stylesheet isn't loaded already
+        //const check = window.document.getElementById("liuchan-css");
+        //if (check) { return; }
+
+        // Create and append stylesheet
+        const wd = window.document;
+
+        //add css for vocabList
+        const css = wd.createElementNS('http://www.w3.org/1999/xhtml', 'link');
+        css.setAttribute('rel', 'stylesheet');
+        css.setAttribute('type', 'text/css');
+        css.setAttribute('href', chrome.extension.getURL('css/vocabList.css'));
+        css.setAttribute('id', 'vocabList.css');
+        wd.getElementsByTagName('head')[0].appendChild(css);
     }
 
     loadFromStorage() {
         // This asks for and receives the stored notepad config from the background script
         chrome.runtime.sendMessage({ 'type': 'loadVocabList' }).then(r => {
-            console.log("loadFromStorage: " + JSON.stringify(r))
             this.updateState(r);
         });
 
@@ -68,46 +86,45 @@ class vocabListOverlay {
             textarea.style.width = data.size[0] + 'px';
             textarea.style.height = data.size[1] + 'px';
         }
-        //textarea.value = data.text;
-        /*
-        // Create an empty <tr> element and add it to the 1st position of the table:
-        var row = textarea.insertRow(0);
 
-        // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-
-        // Add some text to the new cells:
-        cell1.innerHTML = "NEW CELL1";
-        cell2.innerHTML = "NEW CELL2";
-
-        var row = textarea.insertRow(1);
-
-        // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-
-        // Add some text to the new cells:
-        cell1.innerHTML = "NEW CELL3";
-        cell2.innerHTML = "NEW CELL4";
-        */
-        this.addVocabListTable(data.list);
+        this.currentVocabListLength = this.addVocabListTable(data.list);
+        //if no character in vocabList then no need to show the vocab list
+        if (this.currentVocabListLength == 0) {
+            chrome.runtime.sendMessage({ 'type': 'removeShowVocabListFromContextMenu' })
+        }
 
         this.isPinned = !data.pinned;
         this.pinOverlay();
         this.checkPageBoundary();
     }
 
-    addVocabListTable(array){
+    addVocabListTable(array) {
         const textarea = this.elements[4];
-        array.forEach(function (item, index){
+        array.forEach(function (item, index) {
             var row = textarea.insertRow(index);
             var cell1 = row.insertCell(0);
             var cell2 = row.insertCell(1);
-            cell1.innerHTML=item;
-            cell2.innerHTML="Del";
-        })
+            cell1.innerHTML = item;
+            let deleteRowButton = document.createElement('button');
+            deleteRowButton.textContent = '\u2715';
+            cell2.appendChild(deleteRowButton);
+            //var obj = this.elements[4];
+            cell2.addEventListener('click', this.deleteRow);
+        }, this)
+        return array.length;
 
+    }
+
+    deleteRow(e) {
+        let row = e.target.parentNode.parentNode;
+        let table = this.elements[4].childNodes.item('tbody');
+        table.removeChild(row);
+
+        //it table becomes empty, then remove "showVocabList" from context menus and close the overlay
+        if (table.firstChild == null) {
+            chrome.runtime.sendMessage({ 'type': 'removeShowVocabListFromContextMenu' });
+            this.closeOverlay();
+        }
     }
 
     saveAfterInput() {
@@ -117,24 +134,12 @@ class vocabListOverlay {
     }
 
     saveToStorage() {
-        /* const el = this.elements[0].getBoundingClientRect(); // Overlay
-         const ol = this.elements[4]; // Textarea
-         const notepad = {
-             text: this.elements[4].value,
-             pos: [el.x, el.y],
-             size: [ol.offsetWidth, ol.offsetHeight],
-             pinned: this.isPinned
-         };
-         chrome.runtime.sendMessage({'type': 'notepad', 'query': notepad});
-         */
         const textarea = this.elements[4];
-        var content={list:[]};
-        for (let row of textarea.rows) 
-            {
-                let val = row.cells[0].innerText;
-                content.list.push(val);
-                 // your code belows
-            }
+        var content = { list: [] };
+        for (let row of textarea.rows) {
+            let val = row.cells[0].innerText;
+            content.list.push(val);
+        }
         chrome.runtime.sendMessage({ 'type': 'storeVocabList', 'content': content })
 
     }
@@ -205,8 +210,8 @@ class vocabListOverlay {
         this.saveToStorage();
     }
 
-    toggleOverlay() {
-        this.isVisible ? this.closeOverlay() : this.loadFromStorage() ; this.showOverlay();
+   toggleOverlay() {
+        this.isVisible ? this.closeOverlay() : this.loadFromStorage(); this.showOverlay();
     }
 
     showOverlay() {
@@ -214,7 +219,6 @@ class vocabListOverlay {
         this.elements[0].style.display = '';
         this.isVisible = true;
         this.checkPageBoundary();
-       // this.loadFromStorage();
     }
 
     lostFocus(e) {
@@ -229,12 +233,17 @@ class vocabListOverlay {
         this.elements[0].style.display = 'none';
         this.isVisible = false;
 
-        const textarea = this.elements[4];
-        for(var i = 0; i <textarea.rows.length; i++)
-            {
-                textarea.deleteRow(i);
+        let table = this.elements[4].childNodes.item('tbody');
+        if (table != null) {
+            let tableLength = table.rows.length;
+            if (tableLength != 0) {
+                //for some reason there is a childnode to the table inserted..
+                for (let i = 0; i <= tableLength; i++) {
+                    table.deleteRow(-1)
+                }
+                //the vocabList is not empty but UI gets closed so now we should be able to click on showVocabList in the context menu
+                chrome.runtime.sendMessage({ 'type': 'addShowVocabListFromContextMenu' })
             }
-        //textarea.children().remove();
-        console.log("asdf");
+        }
     }
 }

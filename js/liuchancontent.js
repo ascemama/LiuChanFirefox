@@ -86,6 +86,7 @@ const lcxContent = {
         css.setAttribute('href', chrome.extension.getURL('css/popup-' + this.config.popupTheme + '.css'));
         css.setAttribute('id', 'liuchan-css');
         wd.getElementsByTagName('head')[0].appendChild(css);
+ 
     },
 
     disableTab: function () {
@@ -885,7 +886,7 @@ const lcxContent = {
 
         //update the context menu, so that it contains the selected character
         chrome.runtime.sendMessage({
-            "type": "updateContextMenu",
+            "type": "updateContextMenuAddCharacter",
             "entry": e.data[0].simp+"/"+e.data[0].trad
         });
 
@@ -1033,15 +1034,12 @@ chrome.runtime.onMessage.addListener(
             response({'alive':true});
             break;           
         case 'showVocabList':
-            console.log("showVocabList");
-            //lcxContent.showPopup(request.content)
             if(lcxContent.vocabListOverlay){
-               // lcxContent.vocabListOverlay.toggleOverlay();
                lcxContent.vocabListOverlay.toggleOverlay();
             }
             else{
              
-                lcxContent.vocabListOverlay=new vocabListOverlay();
+                lcxContent.vocabListOverlay=new VocabListOverlay();
             }
             break;
             
