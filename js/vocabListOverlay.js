@@ -216,9 +216,31 @@ class VocabListOverlay {
 
     showOverlay() {
         document.addEventListener('click', this.lostFocus);
+       // this.setCustomStyling(this.elements[0]);
+       lcxContent.setCustomStyling(this.elements[0]);
         this.elements[0].style.display = '';
         this.isVisible = true;
         this.checkPageBoundary();
+    }
+
+    setCustomStyling (popup) {
+        chrome.runtime.sendMessage({
+            "type": "customstyling"
+        }, customStyling => {
+            if (customStyling.useCustomization) {
+                const border = customStyling.borderThickness + "px solid " + customStyling.customColors[1];
+                const boxshadow = customStyling.customColors[2] + " 4px 4px 0 0";
+                popup.style.setProperty("background", customStyling.customColors[0], "important");
+                popup.style.setProperty("border", border, "important");
+                popup.style.setProperty("border-radius", customStyling.borderRadius + "px", "important");
+                popup.style.setProperty("box-shadow", boxshadow, "important");
+            } else {
+                popup.style.setProperty("background", "", "");
+                popup.style.setProperty("border", "", "");
+                popup.style.setProperty("border-radius", "", "");
+                popup.style.setProperty("box-shadow", "", "");
+            }
+        });
     }
 
     lostFocus(e) {

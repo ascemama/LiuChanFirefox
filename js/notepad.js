@@ -162,6 +162,7 @@ class Notepad {
 
     showOverlay() {
         document.addEventListener('click', this.lostFocus);
+        lcxContent.setCustomStyling(this.elements[0]);
         this.elements[0].style.display = '';
         this.isVisible = true;
         this.checkPageBoundary();

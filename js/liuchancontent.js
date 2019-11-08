@@ -128,7 +128,7 @@ const lcxContent = {
         }
     },
 
-    setCustomStyling: function (popup) {
+   setCustomStyling: function (popup) {
         chrome.runtime.sendMessage({
             "type": "customstyling"
         }, customStyling => {

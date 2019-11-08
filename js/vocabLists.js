@@ -70,8 +70,8 @@ class VocabList {
             //list is empty, no download
             if (res.list !== undefined) {
               var d=new Date();
-              let objURL = URL.createObjectURL(new Blob(["//" + d.toDateString()+"\n "+JSON.stringify(res.list, null,1).replace(/\[|\]|,|"/g, "").trim()], { type: 'application/json' }));
-              browser.downloads.download({ url: objURL });
+              let objURL = URL.createObjectURL(new Blob(["// Liu Chan - " + d.toDateString()+"\n "+JSON.stringify(res.list, null,1).replace(/\[|\]|,|"/g, "").trim()], { type: 'application/json' }));
+              browser.downloads.download({ url: objURL, saveAs:true });
             }
             else {
               console.log("no list to export")
